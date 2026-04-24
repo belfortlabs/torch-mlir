@@ -1718,6 +1718,13 @@ public:
         });
     if (hadErrorCreatingPayload)
       return failure();
+    // Forward the source op's discardable attrs to the surrounding
+    // `linalg.generic` so they remain visible after lowering.
+    if (auto linalgGeneric =
+            dyn_cast_or_null<linalg::GenericOp>(generic.getDefiningOp())) {
+      for (NamedAttribute attr : op->getDiscardableAttrs())
+        linalgGeneric->setAttr(attr.getName(), attr.getValue());
+    }
     rewriter.replaceOpWithNewOp<tensor::CastOp>(op, resultType, generic);
     return success();
   }
