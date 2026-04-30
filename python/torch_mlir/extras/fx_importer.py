@@ -499,10 +499,19 @@ def _coerce_mlir_attr(value: Any, context: Context) -> Optional[Attribute]:
     )
 
 
+# User-supplied attributes (from `mlir.attrs` / `mlir.arg_attrs` meta) are
+# emitted by the importer with this prefix, so backend-lowering patterns that
+# opt in (e.g. ConvertElementwiseOp in TorchToLinalg) can forward exactly
+# these attrs without leaking unrelated discardable attrs (dialect internals
+# etc.). The `torch-lift-user-attrs` pass at the end of the lowering pipeline
+# strips this prefix to expose the user's chosen names.
+USER_ATTR_PREFIX = "mlir.user."
+
+
 def _apply_op_attrs_from_meta(
     operation: Operation, node: torch_fx.Node, context: Context
 ) -> None:
-    """Read `node.meta['mlir.attrs']` and apply it to `operation`."""
+    """Read `node.meta['mlir.attrs']` and emit each entry as `mlir.user.<k>`."""
     attrs = node.meta.get(MLIR_OP_ATTRS_META_KEY)
     if not attrs:
         return
@@ -511,7 +520,7 @@ def _apply_op_attrs_from_meta(
             mlir_attr = _coerce_mlir_attr(value, context)
             if mlir_attr is None:
                 continue
-            operation.attributes[key] = mlir_attr
+            operation.attributes[USER_ATTR_PREFIX + key] = mlir_attr
 
 
 def _apply_arg_attrs_from_meta(
@@ -519,7 +528,7 @@ def _apply_arg_attrs_from_meta(
     placeholder_nodes: Sequence[torch_fx.Node],
     context: Context,
 ) -> None:
-    """Read `mlir.arg_attrs` from each placeholder and set them on `func_op`.
+    """Read `mlir.arg_attrs` and emit per-arg attrs as `mlir.user.<k>`.
 
     `placeholder_nodes` must be the ordered list of FX nodes that correspond
     1:1 to the function's arguments (same order as `func_op` block args).
@@ -536,7 +545,7 @@ def _apply_arg_attrs_from_meta(
                 mlir_attr = _coerce_mlir_attr(value, context)
                 if mlir_attr is None:
                     continue
-                per_arg[i][key] = mlir_attr
+                per_arg[i][USER_ATTR_PREFIX + key] = mlir_attr
                 any_attrs = True
         if not any_attrs:
             return

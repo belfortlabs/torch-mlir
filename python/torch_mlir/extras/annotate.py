@@ -15,6 +15,15 @@ These helpers are thin conveniences that resolve FX nodes by semantic identity
 (user-input name, submodule fully-qualified name) and write into those dicts.
 They carry no dialect-specific vocabulary: the user chooses the attribute names.
 
+# TODO(annotation-wrapping): once the pipeline works end-to-end, wrap user
+# attributes in a single namespaced wrapper attribute (e.g.
+# `torch.user_attrs = {domain_lower = ..., domain_upper = ...}`) emitted by the
+# importer. Conversion patterns that opt in (TorchToLinalg, etc.) forward only
+# this wrapped attribute through lowerings; a final pipeline pass at the end of
+# torch-mlir's lowering unwraps it back into top-level discardable attrs. This
+# avoids accidentally propagating arbitrary user / dialect-specific attrs that
+# happen to be discardable on a torch op.
+
 Typical usage, as the `annotate=` callback of `torch_mlir.fx.export_and_import`:
 
     def annotate(prog):
