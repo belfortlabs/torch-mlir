@@ -2,6 +2,89 @@
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[project]
+name = "torch-mlir"
+description = "First-class interop between PyTorch and MLIR"
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [{ name = "Sean Silva", email = "silvasean@google.com" }]
+license = "Apache-2.0 WITH LLVM-exception"
+# These fields are produced by setup.py at wheel-build time.
+dynamic = ["version", "dependencies", "optional-dependencies"]
+
+[project.scripts]
+torch-mlir-import-onnx = "torch_mlir.tools.import_onnx.__main__:_cli_main"
+torch-mlir-opt = "torch_mlir.tools.opt.__main__:main"
+
 [tool.black]
 line-length = 88
 target-version = ['py38']
+
+# torch-mlir's Python package is produced by the CMake build (see the
+# custom `build_py` in setup.py), not by setuptools' source-tree
+# discovery. Disable auto-discovery so setuptools doesn't trip over
+# top-level non-Python dirs (lib/, include/, projects/, ...).
+[tool.setuptools]
+packages = []
+
+[tool.uv]
+# torch-mlir is built via CMake (see setup.py / docs/development.md).
+# Don't let `uv sync` try to build the package from source.
+package = false
+
+[[tool.uv.index]]
+name = "pytorch-nightly-cpu"
+url = "https://download.pytorch.org/whl/nightly/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-nightly-cpu" }
+torchvision = { index = "pytorch-nightly-cpu" }
+
+# Dependency groups (PEP 735). Install with e.g.
+#   uv sync --group dev
+#   uv sync --group build --group test
+[dependency-groups]
+# Runtime deps mirrored from setup.py's INSTALL_REQUIRES.
+runtime = [
+    "numpy",
+    "packaging",
+]
+# pytorch-requirements.txt
+torch = [
+    "torch==2.12.0.dev20260323+cpu",
+]
+# torchvision-requirements.txt
+torchvision = [
+    "torchvision==0.26.0.dev20260323+cpu",
+]
+# setup.py's `onnx` extra
+onnx = [
+    "onnx>=1.15.0",
+]
+# build-requirements.txt
+build = [
+    "wheel",
+    "setuptools",
+    "cmake",
+    "ninja<1.13.0; sys_platform == 'win32'",
+    "ninja; sys_platform != 'win32'",
+    "packaging",
+    "pyyaml",
+]
+# test-requirements.txt
+test = [
+    "pillow",
+    "dill",
+    "multiprocess",
+    "onnx==1.16.1",
+    "mpmath==1.3.0",
+]
+# Everything you need for development (matches requirements.txt + torchvision).
+dev = [
+    { include-group = "runtime" },
+    { include-group = "torch" },
+    { include-group = "torchvision" },
+    { include-group = "build" },
+    { include-group = "test" },
+]
