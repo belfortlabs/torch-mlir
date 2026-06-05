@@ -109,8 +109,8 @@ void TorchConversion::createTorchBackendToLinalgOnTensorsBackendPipeline(
   pm.addNestedPass<func::FuncOp>(
       TorchConversion::createFinalizingBackendTypeConversionPass());
 
-  // Lift any user annotation wrapper (`torch.user_attrs`) back to top-level
-  // discardable attrs so downstream consumers see plain attrs.
+  // Strip the `mlir.user.` prefix off user-annotation attrs so downstream
+  // consumers see plain top-level discardable attrs.
   pm.addPass(TorchConversion::createLiftUserAttrsPass());
 
   // Verify that we have lowered to the form that linalg on tensors backends

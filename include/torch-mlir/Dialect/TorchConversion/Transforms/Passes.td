@@ -88,17 +88,18 @@ def ConvertCustomQuantOp : InterfacePass<"torch-convert-custom-quant-op", "mlir:
 }
 
 def LiftUserAttrs : Pass<"torch-lift-user-attrs", "ModuleOp"> {
-  let summary = "Lift `torch.user_attrs` wrapper dicts back to top-level attrs";
+  let summary = "Strip the `mlir.user.` prefix off user-annotation attrs";
   let constructor = "mlir::torch::TorchConversion::createLiftUserAttrsPass()";
   let description = [{
     Frontends emit user-supplied annotations (e.g. those produced from
-    `node.meta["mlir.attrs"]` / `mlir.arg_attrs` by the FX importer) wrapped
-    inside a single `torch.user_attrs` discardable dict so they can be
-    forwarded selectively through lowerings without leaking dialect-internal
-    flags. This pass runs at the end of the backend pipelines and lifts each
-    entry of every `torch.user_attrs` dict back to a top-level discardable
-    attribute on the same op (or function argument), then removes the
-    wrapper. Downstream consumers see plain attrs like
+    `node.meta["mlir.attrs"]` / `mlir.arg_attrs` by the FX importer) with a
+    `mlir.user.` prefix on each attribute name, so they can be forwarded
+    selectively through lowerings without leaking dialect-internal flags. This
+    pass runs at the end of the backend pipelines and, for every op discardable
+    attribute and every `func.func` per-argument attribute whose name starts
+    with `mlir.user.`, re-attaches the value under the un-prefixed name and
+    removes the prefixed entry. Non-prefixed attrs are left untouched.
+    Downstream consumers see plain attrs like
     `{secret.secret, domain_lower = ..., domain_upper = ...}` as if they had
     been set directly.
   }];
