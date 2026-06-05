@@ -513,6 +513,7 @@ def emit_ops(emitter_td: TextEmitter, registry: Registry):
     emit("aten::threshold_backward : (Tensor, Tensor, Scalar) -> (Tensor)")
     emit("aten::floor_divide : (Tensor, Tensor) -> (Tensor)")
     emit("aten::softplus : (Tensor, Scalar, Scalar) -> (Tensor)")
+    emit("aten::softplus_backward : (Tensor, Tensor, Scalar, Scalar) -> (Tensor)")
     emit("aten::prelu : (Tensor, Tensor) -> (Tensor)")
     emit("aten::rad2deg : (Tensor) -> (Tensor)")
     emit("aten::complex : (Tensor, Tensor) -> (Tensor)")
@@ -573,6 +574,10 @@ def emit_ops(emitter_td: TextEmitter, registry: Registry):
     # Non-elementwise tensor compute ops
     emit("aten::linear : (Tensor, Tensor, Tensor?) -> (Tensor)")
     emit("aten::mm : (Tensor, Tensor) -> (Tensor)")
+    emit(
+        "aten::_scaled_mm : (Tensor, Tensor, Tensor, Tensor, Tensor?, Tensor?, int?, bool) -> (Tensor)",
+        has_verifier=True,
+    )
     emit("aten::_int_mm : (Tensor, Tensor) -> (Tensor)")
     emit("aten::addmm : (Tensor, Tensor, Tensor, Scalar, Scalar) -> (Tensor)")
     emit("aten::matmul : (Tensor, Tensor) -> (Tensor)")

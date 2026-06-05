@@ -3254,8 +3254,8 @@ public:
 
     Value constantOne =
         ConstantIntOp::create(rewriter, loc, rewriter.getI64IntegerAttr(1));
-    Value expSelf = AtenExpOp::create(rewriter, loc, outTy, self);
-    Value expOther = AtenExpOp::create(rewriter, loc, outTy, other);
+    Value expSelf = AtenExpOp::create(rewriter, loc, self.getType(), self);
+    Value expOther = AtenExpOp::create(rewriter, loc, other.getType(), other);
     Value addValue = AtenAddTensorOp::create(rewriter, loc, outTy, expSelf,
                                              expOther, constantOne);
     rewriter.replaceOpWithNewOp<AtenLogOp>(op, outTy, addValue);
@@ -3277,8 +3277,8 @@ public:
 
     Value constantOne =
         ConstantIntOp::create(rewriter, loc, rewriter.getI64IntegerAttr(1));
-    Value expSelf = AtenExp2Op::create(rewriter, loc, outTy, self);
-    Value expOther = AtenExp2Op::create(rewriter, loc, outTy, other);
+    Value expSelf = AtenExp2Op::create(rewriter, loc, self.getType(), self);
+    Value expOther = AtenExp2Op::create(rewriter, loc, other.getType(), other);
     Value addValue = AtenAddTensorOp::create(rewriter, loc, outTy, expSelf,
                                              expOther, constantOne);
     rewriter.replaceOpWithNewOp<AtenLog2Op>(op, outTy, addValue);
@@ -5096,6 +5096,17 @@ public:
       repeatInts.push_back(repeat);
     }
 
+    // Track repeated singleton dims that can be materialized with broadcast.
+    llvm::SmallVector<int64_t> selfSizes(selfTy.getSizes().begin(),
+                                         selfTy.getSizes().end());
+    llvm::SmallVector<bool> broadcastRepeatedSingletonDims(repeats.size(),
+                                                           false);
+    for (int i = batch, s = repeats.size(); i < s; ++i) {
+      int64_t inputDim = i - batch;
+      broadcastRepeatedSingletonDims[i] =
+          selfSizes[inputDim] == 1 && repeatInts[i] > 1;
+    }
+
     // Unsqueeze all newly created dims
     llvm::SmallVector<int> unsqueezeDims;
     for (int i = 0; i < batch; ++i) {
@@ -5106,9 +5117,9 @@ public:
       unsqueezeDims.push_back(i);
     }
 
-    // Unsqueeze any non-unary repeats for existing dims
+    // Unsqueeze non-unary repeats, except singleton dims handled by broadcast.
     for (int i = batch, s = repeats.size(); i < s; ++i) {
-      if (repeatInts[i] == 1)
+      if (repeatInts[i] == 1 || broadcastRepeatedSingletonDims[i])
         continue;
       int64_t dim = i + unsqueezeDims.size() - batch;
       Value iv =
@@ -5127,6 +5138,12 @@ public:
     }
 
     for (int i = batch, s = repeats.size(); i < s; ++i) {
+      if (broadcastRepeatedSingletonDims[i]) {
+        lengths.push_back(repeats[i]);
+        expandShape.push_back(repeatInts[i]);
+        continue;
+      }
+
       if (repeatInts[i] != 1) {
         lengths.push_back(repeats[i]);
         expandShape.push_back(repeatInts[i]);
@@ -5149,7 +5166,7 @@ public:
 
     auto outShape = cast<ValueTensorType>(op.getResult().getType()).getSizes();
     for (int i = batch, s = repeats.size(); i < s; ++i) {
-      if (repeatInts[i] == 1)
+      if (repeatInts[i] == 1 || broadcastRepeatedSingletonDims[i])
         continue;
 
       auto selfShape = selfTy.getSizes();

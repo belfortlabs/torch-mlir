@@ -843,6 +843,104 @@ static Value createLinalgPayloadCalculationForElementwiseOp(
         "unimplemented: approximate value should be none or tanh");
     return nullptr;
   }
+  if (auto eluBackward = dyn_cast<AtenEluBackwardOp>(op)) {
+    AtenEluBackwardOp::Adaptor adaptor(operands);
+    if (!isa<mlir::FloatType>(
+            cast<ValueTensorType>(eluBackward.getType()).getDtype())) {
+      eluBackward.emitError("unimplemented: non-floating point dtype");
+      return nullptr;
+    }
+    bool isResult;
+    if (!matchPattern(eluBackward.getIsResult(),
+                      m_TorchConstantBool(&isResult))) {
+      eluBackward.emitError(
+          "unimplemented: expected is_result to be a constant bool");
+      return nullptr;
+    }
+    Value gradOutput = payloadArgs[0];
+    Type elementType = gradOutput.getType();
+    Value selfOrResult =
+        convertScalarToDtype(b, loc, payloadArgs[1], elementType);
+    Value alpha = convertScalarToDtype(b, loc, adaptor.getAlpha(), elementType);
+    Value scale = convertScalarToDtype(b, loc, adaptor.getScale(), elementType);
+    Value inputScale =
+        convertScalarToDtype(b, loc, adaptor.getInputScale(), elementType);
+    Value zero =
+        arith::ConstantOp::create(b, loc, FloatAttr::get(elementType, 0.0));
+    // dELU/dx = scale, when self_or_result > 0
+    // dELU/dx = input_scale * (y + alpha * scale), when y <= 0 and is_result
+    // dELU/dx = scale * alpha * input_scale * exp(input_scale * x),
+    //   when x <= 0 and !is_result
+    Value posGrad = arith::MulFOp::create(b, loc, gradOutput, scale);
+    Value negGrad;
+    if (isResult) {
+      Value alphaScale = arith::MulFOp::create(b, loc, alpha, scale);
+      Value yPlusAlphaScale =
+          arith::AddFOp::create(b, loc, selfOrResult, alphaScale);
+      Value scaledY =
+          arith::MulFOp::create(b, loc, inputScale, yPlusAlphaScale);
+      negGrad = arith::MulFOp::create(b, loc, gradOutput, scaledY);
+    } else {
+      Value xInputScale =
+          arith::MulFOp::create(b, loc, selfOrResult, inputScale);
+      Value expXInputScale = math::ExpOp::create(b, loc, xInputScale);
+      Value scaleAlpha = arith::MulFOp::create(b, loc, scale, alpha);
+      Value scaleAlphaInputScale =
+          arith::MulFOp::create(b, loc, scaleAlpha, inputScale);
+      Value derivative =
+          arith::MulFOp::create(b, loc, scaleAlphaInputScale, expXInputScale);
+      negGrad = arith::MulFOp::create(b, loc, gradOutput, derivative);
+    }
+    // PyTorch branches on `self_or_result <= 0`, which is false for NaN, so
+    // NaN takes the positive branch. UGT (unordered-or-greater) is the dual:
+    // true for NaN or > 0, picking posGrad — matching PyTorch.
+    Value pred = arith::CmpFOp::create(b, loc, arith::CmpFPredicate::UGT,
+                                       selfOrResult, zero);
+    return arith::SelectOp::create(b, loc, pred, posGrad, negGrad);
+  }
+  if (isa<AtenSigmoidBackwardOp>(op)) {
+    if (!isa<mlir::FloatType>(
+            cast<ValueTensorType>(op->getResult(0).getType()).getDtype())) {
+      op->emitError("unimplemented: non-floating point dtype");
+      return nullptr;
+    }
+    Value gradOutput = payloadArgs[0];
+    Type elementType = gradOutput.getType();
+    Value output = convertScalarToDtype(b, loc, payloadArgs[1], elementType);
+    Value one =
+        arith::ConstantOp::create(b, loc, FloatAttr::get(elementType, 1.0));
+    // dSigmoid/dx evaluated from output y = sigmoid(x): y * (1 - y)
+    Value oneMinusOutput = arith::SubFOp::create(b, loc, one, output);
+    Value derivative = arith::MulFOp::create(b, loc, output, oneMinusOutput);
+    return arith::MulFOp::create(b, loc, gradOutput, derivative);
+  }
+  if (auto softplusBackward = dyn_cast<AtenSoftplusBackwardOp>(op)) {
+    AtenSoftplusBackwardOp::Adaptor adaptor(operands);
+    if (!isa<mlir::FloatType>(
+            cast<ValueTensorType>(softplusBackward.getType()).getDtype())) {
+      softplusBackward.emitError("unimplemented: non-floating point dtype");
+      return nullptr;
+    }
+    Value gradOutput = payloadArgs[0];
+    Type elementType = gradOutput.getType();
+    Value self = convertScalarToDtype(b, loc, payloadArgs[1], elementType);
+    Value beta = convertScalarToDtype(b, loc, adaptor.getBeta(), elementType);
+    Value threshold =
+        convertScalarToDtype(b, loc, adaptor.getThreshold(), elementType);
+    Value one =
+        arith::ConstantOp::create(b, loc, FloatAttr::get(elementType, 1.0));
+    // dSoftplus/dx = exp(beta*x) / (1 + exp(beta*x))
+    // when beta*x > threshold, the forward op is approximated by the identity
+    // so the derivative becomes 1.
+    Value betaX = arith::MulFOp::create(b, loc, beta, self);
+    Value expBetaX = math::ExpOp::create(b, loc, betaX);
+    Value denom = arith::AddFOp::create(b, loc, expBetaX, one);
+    Value derivative = arith::DivFOp::create(b, loc, expBetaX, denom);
+    Value scaledGrad = arith::MulFOp::create(b, loc, gradOutput, derivative);
+    Value pred = arith::CmpFOp::create(b, loc, arith::CmpFPredicate::UGT, betaX,
+                                       threshold);
+    return arith::SelectOp::create(b, loc, pred, gradOutput, scaledGrad);
+  }
   if (auto hardtanhBackward = dyn_cast<AtenHardtanhBackwardOp>(op)) {
     AtenHardtanhBackwardOp::Adaptor adaptor(operands);
     if (!isa<mlir::FloatType>(
@@ -1667,7 +1765,8 @@ public:
   matchAndRewrite(Operation *op, ArrayRef<Value> operands,
                   ConversionPatternRewriter &rewriter) const override {
     if (!isa<AtenTanOp, AtenTanhOp, AtenSinhOp, AtenCoshOp, AtenReluOp,
-             AtenPreluOp, AtenGeluOp, AtenGeluBackwardOp, AtenAddTensorOp,
+             AtenPreluOp, AtenGeluOp, AtenGeluBackwardOp, AtenEluBackwardOp,
+             AtenSigmoidBackwardOp, AtenSoftplusBackwardOp, AtenAddTensorOp,
              AtenMulTensorOp, AtenDivTensorOp, AtenDivTensorModeOp,
              AtenDivScalarModeOp, AtenSubTensorOp, AtenAtan2Op,
              AtenLerpTensorOp, AtenSigmoidOp, AtenExpOp, AtenExpm1Op,
@@ -2694,24 +2793,26 @@ static Value nearestInterpolate(OpBuilder &b, Location loc,
       nearestFP = arith::SelectOp::create(b, loc, cmp, floor, ceil);
     } else if (nearestMode == "round_prefer_ceil") {
       Value cstHalf = arith::ConstantOp::create(b, loc, b.getF32FloatAttr(0.5));
-      Value cstOne = arith::ConstantOp::create(b, loc, b.getF32FloatAttr(1));
       Value floor = math::FloorOp::create(b, loc, proj);
       Value ceil = math::CeilOp::create(b, loc, proj);
       Value decimal = arith::SubFOp::create(b, loc, proj, floor);
       Value cmp = arith::CmpFOp::create(b, loc, arith::CmpFPredicate::UGE,
                                         decimal, cstHalf);
       nearestFP = arith::SelectOp::create(b, loc, cmp, ceil, floor);
-      Value inputSizeMOne = arith::SubFOp::create(b, loc, inputSizeFP, cstOne);
-      // don't extract out of bounds
-      nearestFP = arith::MinimumFOp::create(b, loc, nearestFP, inputSizeMOne);
     } else if (nearestMode == "ceil") {
-      Value cstOne = arith::ConstantOp::create(b, loc, b.getF32FloatAttr(1));
-      Value inputSizeMOne = arith::SubFOp::create(b, loc, inputSizeFP, cstOne);
       nearestFP = math::CeilOp::create(b, loc, proj);
-      nearestFP = arith::MinimumFOp::create(b, loc, nearestFP, inputSizeMOne);
     } else {
       llvm_unreachable("Unsupported nearest mode");
     }
+    // Clamp to valid input indices. ONNX half_pixel (and asymmetric) coords can
+    // lie slightly outside [0, length-1] before rounding; without clamping,
+    // tensor.extract uses out-of-range indices (garbage on some backends).
+    Value cstOne = arith::ConstantOp::create(b, loc, b.getF32FloatAttr(1.0));
+    Value cstZero = arith::ConstantOp::create(b, loc, b.getF32FloatAttr(0.0));
+    Value inputSizeMOne = arith::SubFOp::create(b, loc, inputSizeFP, cstOne);
+    nearestFP = arith::MaximumFOp::create(b, loc, nearestFP, cstZero);
+    nearestFP = arith::MinimumFOp::create(b, loc, nearestFP, inputSizeMOne);
+
     Value nearestInt =
         arith::FPToSIOp::create(b, loc, b.getI64Type(), nearestFP);
     Value nearest =
@@ -4021,6 +4122,7 @@ void mlir::torch::torch_to_linalg::populateUncategorizedPatternsAndLegality(
   target.addIllegalOp<
       AtenTanOp, AtenTanhOp, AtenSinhOp, AtenCoshOp, AtenAtanhOp, AtenAcoshOp,
       AtenAsinOp, AtenAsinhOp, AtenReluOp, AtenGeluOp, AtenGeluBackwardOp,
+      AtenEluBackwardOp, AtenSigmoidBackwardOp, AtenSoftplusBackwardOp,
       AtenAddTensorOp, AtenMulTensorOp, AtenDivTensorOp, AtenDivTensorModeOp,
       AtenDivScalarModeOp, AtenSubTensorOp, AtenLerpTensorOp, AtenSigmoidOp,
       AtenMinimumOp, AtenAtan2Op, AtenMaximumOp, AtenToDtypeOp, AtenClampOp,
