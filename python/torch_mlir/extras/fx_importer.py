@@ -464,7 +464,6 @@ def is_builtin_function_or_method(obj: Any) -> bool:
     return isinstance(obj, (BuiltinMethodType, BuiltinFunctionType))
 
 
-<<<<<<< HEAD
 # Reserved `torch.fx.Node.meta` keys consumed by the importer to attach MLIR
 # attributes to emitted ops / function arguments.
 #
