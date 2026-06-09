@@ -100,8 +100,7 @@ def LiftUserAttrs : Pass<"torch-lift-user-attrs", "ModuleOp"> {
     with `mlir.user.`, re-attaches the value under the un-prefixed name and
     removes the prefixed entry. Non-prefixed attrs are left untouched.
     Downstream consumers see plain attrs like
-    `{secret.secret, domain_lower = ..., domain_upper = ...}` as if they had
-    been set directly.
+    `{attr1=...}` as if they had been set directly.
   }];
 }
 #endif // TORCHMLIR_TORCHCONVERSION_PASSES

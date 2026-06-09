@@ -1817,11 +1817,11 @@ public:
         });
     if (hadErrorCreatingPayload)
       return failure();
+
     // Forward user-annotation attrs from the source op to the surrounding
     // `linalg.generic`. The generic represents the elementwise op as a whole,
     // so this is the natural carrier for annotations (e.g. domain bounds);
-    // downstream passes that operate on payload ops (e.g. HEIR's
-    // polynomial-approximation on the inner `arith.maximumf`) should walk up
+    // downstream passes that operate on payload ops should walk up
     // to the parent `linalg.generic` to read these. Only attrs prefixed
     // `mlir.user.` are forwarded so we don't leak unrelated discardable
     // attrs (dialect-internal flags) into linalg ops; the
