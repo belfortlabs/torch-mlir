@@ -433,8 +433,8 @@ wheels = [
 
 [[package]]
 name = "torch"
-version = "2.12.0.dev20260323+cpu"
-source = { registry = "https://download.pytorch.org/whl/nightly/cpu" }
+version = "2.12.0+cpu"
+source = { registry = "https://download.pytorch.org/whl/cpu" }
 dependencies = [
     { name = "filelock" },
     { name = "fsspec" },
@@ -445,26 +445,28 @@ dependencies = [
     { name = "typing-extensions" },
 ]
 wheels = [
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torch-2.12.0.dev20260323%2Bcpu-cp312-cp312-linux_s390x.whl", upload-time = "2026-03-23T09:45:00Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torch-2.12.0.dev20260323%2Bcpu-cp312-cp312-manylinux_2_28_aarch64.whl", upload-time = "2026-03-23T08:53:16Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torch-2.12.0.dev20260323%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl", upload-time = "2026-03-23T08:59:48Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torch-2.12.0.dev20260323%2Bcpu-cp312-cp312-win_amd64.whl", upload-time = "2026-03-23T08:59:59Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torch-2.12.0.dev20260323%2Bcpu-cp313-cp313-linux_s390x.whl", upload-time = "2026-03-23T09:45:27Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torch-2.12.0.dev20260323%2Bcpu-cp313-cp313-manylinux_2_28_aarch64.whl", upload-time = "2026-03-23T08:53:46Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torch-2.12.0.dev20260323%2Bcpu-cp313-cp313-manylinux_2_28_x86_64.whl", upload-time = "2026-03-23T08:59:23Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torch-2.12.0.dev20260323%2Bcpu-cp313-cp313-win_amd64.whl", upload-time = "2026-03-23T08:53:38Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torch-2.12.0.dev20260323%2Bcpu-cp313-cp313t-linux_s390x.whl", upload-time = "2026-03-23T09:46:21Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torch-2.12.0.dev20260323%2Bcpu-cp313-cp313t-manylinux_2_28_aarch64.whl", upload-time = "2026-03-23T08:54:17Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torch-2.12.0.dev20260323%2Bcpu-cp313-cp313t-manylinux_2_28_x86_64.whl", upload-time = "2026-03-23T09:01:22Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torch-2.12.0.dev20260323%2Bcpu-cp313-cp313t-win_amd64.whl", upload-time = "2026-03-23T09:01:58Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torch-2.12.0.dev20260323%2Bcpu-cp314-cp314-linux_s390x.whl", upload-time = "2026-03-23T09:35:10Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torch-2.12.0.dev20260323%2Bcpu-cp314-cp314-manylinux_2_28_aarch64.whl", upload-time = "2026-03-23T08:54:04Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torch-2.12.0.dev20260323%2Bcpu-cp314-cp314-manylinux_2_28_x86_64.whl", upload-time = "2026-03-23T09:01:00Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torch-2.12.0.dev20260323%2Bcpu-cp314-cp314-win_amd64.whl", upload-time = "2026-03-23T09:00:45Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torch-2.12.0.dev20260323%2Bcpu-cp314-cp314t-linux_s390x.whl", upload-time = "2026-03-23T09:45:56Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torch-2.12.0.dev20260323%2Bcpu-cp314-cp314t-manylinux_2_28_aarch64.whl", upload-time = "2026-03-23T08:54:05Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torch-2.12.0.dev20260323%2Bcpu-cp314-cp314t-manylinux_2_28_x86_64.whl", upload-time = "2026-03-23T09:01:42Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torch-2.12.0.dev20260323%2Bcpu-cp314-cp314t-win_amd64.whl", upload-time = "2026-03-23T08:54:17Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torch-2.12.0%2Bcpu-cp312-cp312-linux_s390x.whl", hash = "sha256:b9d0e8eed0af9321ffb12b75f4aca371b071254f12cf75875d5a8e7cc8f52b51", upload-time = "2026-05-12T23:16:33Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torch-2.12.0%2Bcpu-cp312-cp312-manylinux_2_28_aarch64.whl", hash = "sha256:ce2ddb880b0813fcc91a737f08fdd973a8115a74c64ccb34e9c09a7964b4d448", upload-time = "2026-05-12T23:16:40Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torch-2.12.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl", hash = "sha256:5e3dc83725581fa38b7b2e45c58692e30b2a3cde19191af54b675ffcac3840a6", upload-time = "2026-05-12T23:16:48Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torch-2.12.0%2Bcpu-cp312-cp312-win_amd64.whl", hash = "sha256:70ead47f538417323a230c0e743e5cbb6d91f11bd8339abf8c05c9d02f8409bc", upload-time = "2026-05-12T23:16:56Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torch-2.12.0%2Bcpu-cp312-cp312-win_arm64.whl", hash = "sha256:5a3b24f429d126a08acafd5cfe8b719409618ad57c49bf4f20df4f8cd32cd682", upload-time = "2026-05-12T23:17:00Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torch-2.12.0%2Bcpu-cp313-cp313-linux_s390x.whl", hash = "sha256:5e0da19e1c3bfdc9b92638c552579eac678354485d61fc8921b0461fd6c40449", upload-time = "2026-05-12T23:17:05Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torch-2.12.0%2Bcpu-cp313-cp313-manylinux_2_28_aarch64.whl", hash = "sha256:68b7ddd4db4603a03e106e74c7098c8d8c8943d33c1e5ada009ca4cd885759c3", upload-time = "2026-05-12T23:17:12Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torch-2.12.0%2Bcpu-cp313-cp313-manylinux_2_28_x86_64.whl", hash = "sha256:ada78018bdfa30d1c766596cd32d910dbf5b03424cd859231b6d2a00533de922", upload-time = "2026-05-12T23:17:20Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torch-2.12.0%2Bcpu-cp313-cp313-win_amd64.whl", hash = "sha256:59bc266826e683899d49ee0af9829f3eafd0a16e15b5db9dc591c8d955003b66", upload-time = "2026-05-12T23:17:27Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torch-2.12.0%2Bcpu-cp313-cp313-win_arm64.whl", hash = "sha256:97a5160abf3ca9d59a2cd7b4b4de89d9dfe290d36a1ac720262a55fbcee10b6c", upload-time = "2026-05-12T23:17:31Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torch-2.12.0%2Bcpu-cp313-cp313t-linux_s390x.whl", hash = "sha256:32b9b7a0974cd6149cb98def0a28a49d92d7c14a384273d5539da9624239e950", upload-time = "2026-05-12T23:17:36Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torch-2.12.0%2Bcpu-cp313-cp313t-manylinux_2_28_aarch64.whl", hash = "sha256:93ed8dc52c113580daf6124982b3232629045dccc5cd83a8f5ed478f7bac7340", upload-time = "2026-05-12T23:17:43Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torch-2.12.0%2Bcpu-cp313-cp313t-manylinux_2_28_x86_64.whl", hash = "sha256:6a1c86abd4ed15a0736cf2663ad69642ae5d1288c99e30346070e6241018a0a9", upload-time = "2026-05-12T23:17:54Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torch-2.12.0%2Bcpu-cp313-cp313t-win_amd64.whl", hash = "sha256:768dce4b7b3353795f667d1cb0dd7dfba06f570cd39539576097335e05bb71fe", upload-time = "2026-05-12T23:18:02Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torch-2.12.0%2Bcpu-cp314-cp314-linux_s390x.whl", hash = "sha256:ee1f329acfd0c2a1ccaa3393bcaf9857ea58759549bb2d67e271a6eab42382b3", upload-time = "2026-05-12T23:18:08Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torch-2.12.0%2Bcpu-cp314-cp314-manylinux_2_28_aarch64.whl", hash = "sha256:797c066367792c92eb97cafba7fd0caa8d7455e6078a4ee880630077378dc372", upload-time = "2026-05-12T23:18:15Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torch-2.12.0%2Bcpu-cp314-cp314-manylinux_2_28_x86_64.whl", hash = "sha256:a8f419ce3f25388d36e67153ec63b3a1b17059c49f5a7759a7e91ac4843660d3", upload-time = "2026-05-12T23:18:22Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torch-2.12.0%2Bcpu-cp314-cp314-win_amd64.whl", hash = "sha256:1dd196c43e74e7b3b526ff434e7efbdef3f3792a2efbecfc983d7dce501840d2", upload-time = "2026-05-12T23:18:30Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torch-2.12.0%2Bcpu-cp314-cp314t-linux_s390x.whl", hash = "sha256:d0d2080cb13c94ebc0c884d237e404490743d0f40192c8a180abf3b6b6f334cf", upload-time = "2026-05-12T23:18:35Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torch-2.12.0%2Bcpu-cp314-cp314t-manylinux_2_28_aarch64.whl", hash = "sha256:f7bc15972acad257723775237cdd120024cca844b8bc64701822fa596bcb7e14", upload-time = "2026-05-12T23:18:42Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torch-2.12.0%2Bcpu-cp314-cp314t-manylinux_2_28_x86_64.whl", hash = "sha256:4d79f961250d1763487ecbc90af019a80009f9e87cadc5366b3ec4ba5671fea6", upload-time = "2026-05-12T23:18:50Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torch-2.12.0%2Bcpu-cp314-cp314t-win_amd64.whl", hash = "sha256:46b8f4c41ac36bb5d5b47f5437b3de5541b313275e59c1d2aefd3bef32b0f531", upload-time = "2026-05-12T23:18:58Z" },
 ]
 
 [[package]]
@@ -557,8 +559,8 @@ dev = [
     { name = "pillow" },
     { name = "pyyaml" },
     { name = "setuptools" },
-    { name = "torch", specifier = "==2.12.0.dev20260323+cpu", index = "https://download.pytorch.org/whl/nightly/cpu" },
-    { name = "torchvision", specifier = "==0.26.0.dev20260323+cpu", index = "https://download.pytorch.org/whl/nightly/cpu" },
+    { name = "torch", specifier = "==2.12.0+cpu", index = "https://download.pytorch.org/whl/cpu" },
+    { name = "torchvision", specifier = "==0.27.0+cpu", index = "https://download.pytorch.org/whl/cpu" },
     { name = "wheel" },
 ]
 onnx = [{ name = "onnx", specifier = ">=1.15.0" }]
@@ -573,34 +575,34 @@ test = [
     { name = "onnx", specifier = "==1.16.1" },
     { name = "pillow" },
 ]
-torch = [{ name = "torch", specifier = "==2.12.0.dev20260323+cpu", index = "https://download.pytorch.org/whl/nightly/cpu" }]
-torchvision = [{ name = "torchvision", specifier = "==0.26.0.dev20260323+cpu", index = "https://download.pytorch.org/whl/nightly/cpu" }]
+torch = [{ name = "torch", specifier = "==2.12.0+cpu", index = "https://download.pytorch.org/whl/cpu" }]
+torchvision = [{ name = "torchvision", specifier = "==0.27.0+cpu", index = "https://download.pytorch.org/whl/cpu" }]
 
 [[package]]
 name = "torchvision"
-version = "0.26.0.dev20260323+cpu"
-source = { registry = "https://download.pytorch.org/whl/nightly/cpu" }
+version = "0.27.0+cpu"
+source = { registry = "https://download.pytorch.org/whl/cpu" }
 dependencies = [
     { name = "numpy" },
     { name = "pillow" },
     { name = "torch" },
 ]
 wheels = [
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torchvision-0.26.0.dev20260323%2Bcpu-cp312-cp312-manylinux_2_28_aarch64.whl", upload-time = "2026-03-23T12:01:50Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torchvision-0.26.0.dev20260323%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl", upload-time = "2026-03-23T12:23:27Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torchvision-0.26.0.dev20260323%2Bcpu-cp312-cp312-win_amd64.whl", upload-time = "2026-03-23T12:36:54Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torchvision-0.26.0.dev20260323%2Bcpu-cp313-cp313-manylinux_2_28_aarch64.whl", upload-time = "2026-03-23T12:01:54Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torchvision-0.26.0.dev20260323%2Bcpu-cp313-cp313-manylinux_2_28_x86_64.whl", upload-time = "2026-03-23T12:23:24Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torchvision-0.26.0.dev20260323%2Bcpu-cp313-cp313-win_amd64.whl", upload-time = "2026-03-23T12:36:53Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torchvision-0.26.0.dev20260323%2Bcpu-cp313-cp313t-manylinux_2_28_aarch64.whl", upload-time = "2026-03-23T12:02:00Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torchvision-0.26.0.dev20260323%2Bcpu-cp313-cp313t-manylinux_2_28_x86_64.whl", upload-time = "2026-03-23T12:23:24Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torchvision-0.26.0.dev20260323%2Bcpu-cp313-cp313t-win_amd64.whl", upload-time = "2026-03-23T12:37:23Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torchvision-0.26.0.dev20260323%2Bcpu-cp314-cp314-manylinux_2_28_aarch64.whl", upload-time = "2026-03-23T12:01:55Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torchvision-0.26.0.dev20260323%2Bcpu-cp314-cp314-manylinux_2_28_x86_64.whl", upload-time = "2026-03-23T12:23:27Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torchvision-0.26.0.dev20260323%2Bcpu-cp314-cp314-win_amd64.whl", upload-time = "2026-03-23T12:36:46Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torchvision-0.26.0.dev20260323%2Bcpu-cp314-cp314t-manylinux_2_28_aarch64.whl", upload-time = "2026-03-23T12:01:58Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torchvision-0.26.0.dev20260323%2Bcpu-cp314-cp314t-manylinux_2_28_x86_64.whl", upload-time = "2026-03-23T12:23:30Z" },
-    { url = "https://download-r2.pytorch.org/whl/nightly/cpu/torchvision-0.26.0.dev20260323%2Bcpu-cp314-cp314t-win_amd64.whl", upload-time = "2026-03-23T12:36:51Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torchvision-0.27.0%2Bcpu-cp312-cp312-manylinux_2_28_aarch64.whl", hash = "sha256:1b06f42d48b62098114923d8a3fe9fa864182715db06584a515155db0aa8eb30", upload-time = "2026-05-12T16:20:36Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torchvision-0.27.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl", hash = "sha256:912a8b008d95fc9f8f8507e0663238aa01abfeb29f38e218116217560a1b6401", upload-time = "2026-05-12T16:20:36Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torchvision-0.27.0%2Bcpu-cp312-cp312-win_amd64.whl", hash = "sha256:4c87d4bb691765173f186f5a9882fb85a75301547c4186dd75688bba907076e4", upload-time = "2026-05-12T16:20:36Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torchvision-0.27.0%2Bcpu-cp313-cp313-manylinux_2_28_aarch64.whl", hash = "sha256:69093b64b2762c43df17be2db2be163029963d90bc3f1801500fdeb723e54833", upload-time = "2026-05-12T16:20:36Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torchvision-0.27.0%2Bcpu-cp313-cp313-manylinux_2_28_x86_64.whl", hash = "sha256:ba77816bbde883c0c2075a1e284cf2e6f324472d4523442f5e3ae0812a98ae1e", upload-time = "2026-05-12T16:20:36Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torchvision-0.27.0%2Bcpu-cp313-cp313-win_amd64.whl", hash = "sha256:159c7d32de5256ed946b4188335b00d11e0c3f7838998f94eaa98384b0249600", upload-time = "2026-05-12T16:20:36Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torchvision-0.27.0%2Bcpu-cp313-cp313t-manylinux_2_28_aarch64.whl", hash = "sha256:1777906f08c75be6daf9a11946894b63ef368951e7aa52da83f8bfc824856123", upload-time = "2026-05-12T16:20:36Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torchvision-0.27.0%2Bcpu-cp313-cp313t-manylinux_2_28_x86_64.whl", hash = "sha256:4388677d0903db4892587d5c87ab6f6cb31d19bac4838e083db022682036e152", upload-time = "2026-05-12T16:20:36Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torchvision-0.27.0%2Bcpu-cp313-cp313t-win_amd64.whl", hash = "sha256:1d38651bd624dbbaf5ad77ccac93a60b16fc81f1ccacf2f5268bbc0dd2e7e1d7", upload-time = "2026-05-12T16:20:37Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torchvision-0.27.0%2Bcpu-cp314-cp314-manylinux_2_28_aarch64.whl", hash = "sha256:c7e3c5662278ab5d64d150cc17694060e9ce5875b8739094dadf07a4ba45b90e", upload-time = "2026-05-12T16:20:37Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torchvision-0.27.0%2Bcpu-cp314-cp314-manylinux_2_28_x86_64.whl", hash = "sha256:1417b91354698b045a4127cf7108b1dc8af1351a3002ecc5661c3ca69df577d4", upload-time = "2026-05-12T16:20:37Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torchvision-0.27.0%2Bcpu-cp314-cp314-win_amd64.whl", hash = "sha256:58759994610e69773b1d7b038dfb2c72e8bf237fb3ba765f2ab1d6af7835dd88", upload-time = "2026-05-12T16:20:37Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torchvision-0.27.0%2Bcpu-cp314-cp314t-manylinux_2_28_aarch64.whl", hash = "sha256:4d2effc9740e711ea9b2db99e8874977eb6a3baa8b830b8a7416b2fde416de64", upload-time = "2026-05-12T16:20:37Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torchvision-0.27.0%2Bcpu-cp314-cp314t-manylinux_2_28_x86_64.whl", hash = "sha256:ae89bf1a81f3c7fdd222fbbddd8135a054d24ddd13f3b410e4f96d75f72952df", upload-time = "2026-05-12T16:20:37Z" },
+    { url = "https://download-r2.pytorch.org/whl/cpu/torchvision-0.27.0%2Bcpu-cp314-cp314t-win_amd64.whl", hash = "sha256:c8b3c995d4294551b5ab33cbcf60d700819dc23d53b21a9c74936e521c88de33", upload-time = "2026-05-12T16:20:37Z" },
 ]
 
 [[package]]
