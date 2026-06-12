@@ -2,17 +2,17 @@
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
-[project]
-name = "torch-mlir"
-description = "First-class interop between PyTorch and MLIR"
-readme = "README.md"
-requires-python = ">=3.12"
-# These fields are produced by setup.py at wheel-build time.
-dynamic = ["version", "dependencies", "optional-dependencies"]
+# [project]
+# name = "torch-mlir"
+# description = "First-class interop between PyTorch and MLIR"
+# readme = "README.md"
+# requires-python = ">=3.12"
+# # These fields are produced by setup.py at wheel-build time.
+# dynamic = ["version", "dependencies", "optional-dependencies"]
 
-[project.scripts]
-torch-mlir-import-onnx = "torch_mlir.tools.import_onnx.__main__:_cli_main"
-torch-mlir-opt = "torch_mlir.tools.opt.__main__:main"
+# [project.scripts]
+# torch-mlir-import-onnx = "torch_mlir.tools.import_onnx.__main__:_cli_main"
+# torch-mlir-opt = "torch_mlir.tools.opt.__main__:main"
 
 [tool.black]
 line-length = 88
@@ -62,6 +62,13 @@ build = [
     "ninja; sys_platform != 'win32'",
     "packaging",
     "pyyaml",
+    # Mirrored from externals/llvm-project/mlir/python/requirements.txt;
+    # re-sync when the LLVM submodule is bumped.
+    "nanobind>=2.9, <3.0",
+    "PyYAML>=5.4.0, <=6.0.1",
+    "typing_extensions>=4.12.2",
+    "numpy>=2.1.0, <=2.1.2",
+    "ml_dtypes>=0.5.0, <=0.6.0",
 ]
 test = [
     "pillow",
