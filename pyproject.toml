@@ -1,5 +1,21 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+# These must be enough to drive setup.py's CMake build of the MLIR Python
+# bindings under build isolation (cibuildwheel). Kept in sync with the
+# [dependency-groups].build table below and
+# externals/llvm-project/mlir/python/requirements.txt (re-sync on LLVM bumps).
+requires = [
+    "setuptools",
+    "wheel",
+    "cmake",
+    "ninja<1.13.0; sys_platform == 'win32'",
+    "ninja; sys_platform != 'win32'",
+    "packaging",
+    "nanobind>=2.9, <3.0",
+    "PyYAML>=5.4.0, <=6.0.1",
+    "typing_extensions>=4.12.2",
+    "numpy>=2.1.0, <=2.1.2",
+    "ml_dtypes>=0.5.0, <=0.6.0",
+]
 build-backend = "setuptools.build_meta"
 
 # [project]
@@ -18,12 +34,13 @@ build-backend = "setuptools.build_meta"
 line-length = 88
 target-version = ['py38']
 
-# torch-mlir's Python package is produced by the CMake build (see the
-# custom `build_py` in setup.py), not by setuptools' source-tree
-# discovery. Disable auto-discovery so setuptools doesn't trip over
-# top-level non-Python dirs (lib/, include/, projects/, ...).
-[tool.setuptools]
-packages = []
+# NOTE: torch-mlir's Python package is produced by the CMake build (see the
+# custom `build_py` in setup.py), not by setuptools' source-tree discovery.
+# Auto-discovery is disabled via `packages=[]` passed directly in setup.py.
+# We intentionally do NOT define a `[tool.setuptools]` (or `[project]`) table
+# here: doing so makes modern setuptools treat pyproject.toml as the metadata
+# source and reject the setup.py-driven build with
+# "`project` must contain ['version'] properties".
 
 [tool.uv]
 # torch-mlir is built via CMake (see setup.py / docs/development.md).
@@ -84,3 +101,36 @@ dev = [
     { include-group = "build" },
     { include-group = "test" },
 ]
+
+# Wheel building (see .github/workflows/release.yml). We ship the lightweight
+# MLIR-only bindings build (no torch dep): the `torch_mlir` import package plus
+# the `torch-mlir-opt` binary. The version is injected by the release workflow
+# via TORCH_MLIR_PYTHON_PACKAGE_VERSION (read by setup.py).
+[tool.cibuildwheel]
+build = "cp311-* cp312-* cp313-*"
+# manylinux only (no musllinux), 64-bit only.
+skip = "*-musllinux* *_i686 *-win32 *-win_amd64"
+build-frontend = "build[uv]"
+# Run from cibuildwheel's isolated test dir so the import resolves to the
+# installed wheel rather than the source tree.
+test-command = "python -c \"import torch_mlir; print('torch_mlir', torch_mlir.__file__)\""
+# Note: per-platform `environment` tables below fully replace (do not merge
+# with) any global one, so the build env is defined per platform.
+
+[tool.cibuildwheel.linux]
+archs = "auto64"
+manylinux-x86_64-image = "manylinux_2_28"
+manylinux-aarch64-image = "manylinux_2_28"
+before-all = "bash build_tools/python_deploy/install_cibuildwheel_deps.sh"
+# Build with the manylinux default gcc toolchain (the el8-module clang 21
+# crashes with SIGILL on the runners). ccache reuses the LLVM/MLIR object
+# cache across the per-Python-version builds; CMake reads the
+# *_COMPILER_LAUNCHER cache vars from these env vars. CCACHE_DIR lives inside
+# the mounted /project so the host's actions/cache can persist it.
+environment-pass = ["TORCH_MLIR_PYTHON_PACKAGE_VERSION"]
+environment = { TORCH_MLIR_ENABLE_ONLY_MLIR_PYTHON_BINDINGS = "1", TORCH_MLIR_ENABLE_JIT_IR_IMPORTER = "0", TORCH_MLIR_ENABLE_LTC = "0", CMAKE_GENERATOR = "Ninja", CMAKE_C_COMPILER_LAUNCHER = "ccache", CMAKE_CXX_COMPILER_LAUNCHER = "ccache", CCACHE_DIR = "/project/.ccache", CCACHE_MAXSIZE = "2G" }
+
+[tool.cibuildwheel.macos]
+archs = "auto64"
+before-all = "brew install ccache ninja"
+environment = { MACOSX_DEPLOYMENT_TARGET = "11.0", TORCH_MLIR_ENABLE_ONLY_MLIR_PYTHON_BINDINGS = "1", TORCH_MLIR_ENABLE_JIT_IR_IMPORTER = "0", TORCH_MLIR_ENABLE_LTC = "0", CMAKE_GENERATOR = "Ninja", CMAKE_C_COMPILER_LAUNCHER = "ccache", CMAKE_CXX_COMPILER_LAUNCHER = "ccache" }

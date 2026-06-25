@@ -236,7 +236,8 @@ INSTALL_REQUIRES = [
 EXT_MODULES = [
     CMakeExtension("torch_mlir._mlir_libs._torchMlir"),
 ]
-NAME = "torch-mlir"
+# Distribution (PyPI) name. The import package stays `torch_mlir`.
+NAME = "belfort-torch-mlir"
 
 # If building PyTorch extensions, customize.
 if not TORCH_MLIR_ENABLE_ONLY_MLIR_PYTHON_BINDINGS:
@@ -270,6 +271,12 @@ setup(
         "build_py": CMakeBuild,
     },
     ext_modules=EXT_MODULES,
+    # The Python package contents are placed into the build dir by the custom
+    # CMake `build_py` above; there are no source-tree packages to discover.
+    # An explicit empty list disables setuptools auto-discovery (which would
+    # otherwise trip over top-level non-Python dirs like lib/, include/,
+    # projects/, ...). Previously set via [tool.setuptools] in pyproject.toml.
+    packages=[],
     python_requires=">=3.8",
     install_requires=INSTALL_REQUIRES,
     extras_require={
