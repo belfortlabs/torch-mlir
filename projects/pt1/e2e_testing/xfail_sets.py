@@ -3674,6 +3674,14 @@ if torch_version_for_comparison() > version.parse("2.10.0.dev"):
         "Aten_CastFloatModule_basic",
     }
 
+if torch_version_for_comparison() >= version.parse("2.14.0.dev"):
+    # Pass with the ONNX export of torch 2.14 (CI's unpinned stable torch).
+    ONNX_XFAIL_SET = ONNX_XFAIL_SET - {
+        "ElementwiseBitwiseRightShiftInt32Module_basic",
+        "ElementwiseBitwiseRightShiftInt64Module_basic",
+        "ElementwiseBitwiseRightShiftInt8Module_basic",
+    }
+
 if torch_version_for_comparison() < version.parse("2.4.0.dev"):
     STABLEHLO_PASS_SET = STABLEHLO_PASS_SET - {
         "AtenIntMM_basic",
