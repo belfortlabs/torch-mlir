@@ -2,7 +2,10 @@
 # These must be enough to drive setup.py's CMake build of the MLIR Python
 # bindings under build isolation (cibuildwheel). Kept in sync with the
 # [dependency-groups].build table below and
-# externals/llvm-project/mlir/python/requirements.txt (re-sync on LLVM bumps).
+# externals/llvm-project/mlir/python/requirements.txt (re-sync on LLVM bumps),
+# minus numpy and ml_dtypes: the bindings build does not use them, and that
+# file's numpy<=2.1.2 has no cp314 wheels. numpy stays a runtime dependency
+# (setup.py install_requires).
 requires = [
     "setuptools",
     "wheel",
@@ -11,10 +14,8 @@ requires = [
     "ninja; sys_platform != 'win32'",
     "packaging",
     "nanobind>=2.9, <3.0",
-    "PyYAML>=5.4.0, <=6.0.1",
+    "PyYAML>=5.4.0, <=6.0.3",
     "typing_extensions>=4.12.2",
-    "numpy>=2.1.0, <=2.1.2",
-    "ml_dtypes>=0.5.0, <=0.6.0",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -82,10 +83,8 @@ build = [
     # Mirrored from externals/llvm-project/mlir/python/requirements.txt;
     # re-sync when the LLVM submodule is bumped.
     "nanobind>=2.9, <3.0",
-    "PyYAML>=5.4.0, <=6.0.1",
+    "PyYAML>=5.4.0, <=6.0.3",
     "typing_extensions>=4.12.2",
-    "numpy>=2.1.0, <=2.1.2",
-    "ml_dtypes>=0.5.0, <=0.6.0",
 ]
 test = [
     "pillow",
@@ -107,7 +106,7 @@ dev = [
 # the `torch-mlir-opt` binary. The version is injected by the release workflow
 # via TORCH_MLIR_PYTHON_PACKAGE_VERSION (read by setup.py).
 [tool.cibuildwheel]
-build = "cp311-* cp312-* cp313-*"
+build = "cp311-* cp312-* cp313-* cp314-*"
 # manylinux only (no musllinux), 64-bit only.
 skip = "*-musllinux* *_i686 *-win32 *-win_amd64"
 build-frontend = "build[uv]"
